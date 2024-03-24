@@ -1,35 +1,30 @@
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::prelude::*;
 use std::path::Path;
+use std::process;
 
 pub fn read(file: &str) -> String {
-    let path = Path::new(file);
-    let display = path.display();
+    if !Path::new(file).exists() {
+        let result = File::create(file);
+        if result.is_err() {
+            eprint!("Error creating file: {:?}", result.unwrap_err());
+            process::exit(2);
+        }
+        return String::new();
+    }
+    let file_read = fs::read_to_string(file);
 
-    let mut file = match File::open(&path) {
-        Err(e) => panic!("couldn't open {}: {}", display, e),
-        Ok(file) => file,
-    };
-
-    let mut s = String::new();
-    match file.read_to_string(&mut s) {
-        Err(e) => panic!("couldn't read {}: {}", display, e),
-        _ => (),
-    };
-    s
+    if file_read.is_err() {
+        eprintln!("Error opening file {:?}", file_read);
+        process::exit(3)
+    }
+    file_read.unwrap()
 }
 
-pub fn write(file: &str, data: &str) {
-    let path = Path::new(file);
-    let display = path.display();
-
-    let mut file = match File::create(&path) {
-        Err(why) => panic!("coulden't create {}: {}", display, why),
-        Ok(file) => file,
-    };
-
-    match file.write_all(data.as_bytes()) {
-        Err(why) => panic!("couldn't write to {}: {}", display, why),
-        Ok(_) => (),
+pub fn write(file_path: &str, text: &str) {
+    let result = fs::write(file_path, text);
+    if result.is_err() {
+        eprintln!("Error writing to file");
+        process::exit(4);
     }
 }

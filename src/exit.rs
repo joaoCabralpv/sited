@@ -1,4 +1,0 @@
-enum ShouldExit {
-    Yes,
-    No,
-}

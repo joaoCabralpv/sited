@@ -5,20 +5,26 @@ use crossterm::{
 };
 use std::io::{stdout, Write};
 //use std::process::exit;
-use crate::exit;
+use self::get_file::get_file;
 use crate::io;
 use std::collections::VecDeque;
 mod input;
+mod get_file;
 
 pub struct App {
     event_queue: VecDeque<Event>,
+    file_name:String,
+    text:String,
     exit: bool,
 }
 
 impl App {
     pub fn new() -> App {
+        let file_name = get_file();
         App {
             event_queue: VecDeque::new(),
+            text:io::read(&file_name),
+            file_name:file_name,
             exit: false,
         }
     }
@@ -37,10 +43,7 @@ impl App {
                 None => break,
                 Some(e) => e,
             };
-            match event {
-                Event::Key(k) => self.handle_key(k),
-                _ => (),
-            }
+            if let Event::Key(k) = event {self.handle_key(k)}
         }
     }
     fn handle_key(&mut self, key: event::KeyEvent) {

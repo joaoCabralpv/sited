@@ -1,6 +1,4 @@
-mod App;
 mod app;
-mod exit;
 mod io;
 use crossterm::terminal;
 
