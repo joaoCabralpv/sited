@@ -1,0 +1,4 @@
+enum ShouldExit {
+    Yes,
+    No,
+}
